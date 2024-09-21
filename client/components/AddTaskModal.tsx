@@ -60,7 +60,9 @@ const AddTaskModal = () => {
       setIsAddModalOpen(false);
     }
     else{
-      const url = "http://localhost:5000/api/addtask";
+
+      try {
+        const url = "http://localhost:5000/api/addtask";
       const headers = {
         method: "POST",
         headers: {
@@ -69,7 +71,6 @@ const AddTaskModal = () => {
         },
         body: JSON.stringify({ ...newTask, user: user?.email }),
       };
-      try {
         const res = await fetch(url, headers);
         const data = await res.json();
         addTask(data.task);

@@ -37,7 +37,6 @@ export function DashboardComponent() {
         body: JSON.stringify({user:user?.email}),
       }
 
-
     const res = await fetch(url, headers);
     const result = await res.json();
     setTasks(result.tasks);
