@@ -45,7 +45,6 @@ function Page() {
 
   const submitForm = async (e:any) => {
     e.preventDefault();
-    setLoading(true);
 
     if (registerInfo.password !== registerInfo.cpassword) {
       toast({
@@ -58,6 +57,7 @@ function Page() {
       return;
     }
 
+    setLoading(true);
     try {
       const url = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/register`;
       const res = await fetch(url, {
