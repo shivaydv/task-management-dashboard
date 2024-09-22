@@ -57,8 +57,8 @@ function Page() {
       return;
     }
 
-    setLoading(true);
     try {
+    setLoading(true);
       const url = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/register`;
       const res = await fetch(url, {
         method: "POST",
