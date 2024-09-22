@@ -19,7 +19,7 @@ const Tasklist = () => {
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "all">("all");
   const [sortBy, setSortBy] = useState<"title" | "priority" | "dueDate" | "none">("none");
 
-  
+
   const filteredTasks = tasks.filter(
     (task) =>
       (statusFilter === "all" || task.status === statusFilter) &&
@@ -124,9 +124,9 @@ const Tasklist = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Tasks</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Due Date</TableHead>
+                <TableHead className="text-nowrap">Due Date</TableHead>
                 <TableHead>Priority</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Menu</TableHead>
               </TableRow>
             </TableHeader>
