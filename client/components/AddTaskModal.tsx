@@ -1,5 +1,7 @@
 "use client";
-import { EmptyTask, TaskPriority, TaskStatus, useStore } from "@/lib/store";
+
+import { EmptyTask } from "@/lib/constants";
+import {TaskPriority, TaskStatus,} from "@/types/types"
 import {
   Dialog,
   DialogContent,
@@ -20,6 +22,9 @@ import {
 import { format } from "date-fns";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useTaskStore } from "@/store/taskStore";
+import { useModalStore } from "@/store/modalStore";
+import { useDashboardStore } from "@/store/dashboardStore";
 
 const AddTaskModal = () => {
   const {
@@ -27,18 +32,24 @@ const AddTaskModal = () => {
     newTask,
     updateTask,
     setNewTask,
+    addTask,
+  } = useTaskStore();
+  const {
+
     isAddModalOpen,
     setIsAddModalOpen,
-    addTask,
+
+  } = useModalStore();
+  const {
     user,
-  } = useStore();
+  } = useDashboardStore();
 
   const {toast} = useToast();
 
  const handleAddTask = async () => {
 
     if (newTask._id) {
-      const url = "http://localhost:5000/api/updatetask";
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/updatetask`;
       const headers = {
         method: "POST",
         headers: {
@@ -62,7 +73,7 @@ const AddTaskModal = () => {
     else{
 
       try {
-        const url = "http://localhost:5000/api/addtask";
+        const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/addtask`;
       const headers = {
         method: "POST",
         headers: {

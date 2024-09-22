@@ -1,15 +1,18 @@
 "use client";
 
 import Sidebar from "./Sidebar";
-import { useStore } from "@/lib/store";
+
 import Header from "./Header";
 import Tasklist from "./Tasklist";
 import Kanban from "./Kanban";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useTaskStore } from "@/store/taskStore";
+import { useDashboardStore } from "@/store/dashboardStore";
 
 export function DashboardComponent() {
-  const { boardView, user, setUser,setTasks,tasks } = useStore();
+  const { boardView, user, setUser } = useDashboardStore();
+  const { tasks,setTasks } = useTaskStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export function DashboardComponent() {
   }, [user, router]);
 
   const fetchTasks = async () => {
-    const url = "http://localhost:5000/api/alltasks";
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/alltasks`;
     const headers = {
         method: "POST",
         headers: {
@@ -57,11 +60,11 @@ export function DashboardComponent() {
     return null;
   } else
     return (
-      <div className="flex h-screen bg-background">
+      <div className="flex max-sm:flex-col h-screen bg-secondary dark:bg-background">
         <Sidebar />
-        <div className="flex-1 p-8 overflow-auto">
+        <div className="flex-1 p-8 overflow-auto ">
           <Header />
-          {boardView === "list" ? <Tasklist /> : <Kanban />}
+          {boardView === "list" ? <Tasklist/> : <Kanban />}
         </div>
       </div>
     );

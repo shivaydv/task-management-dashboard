@@ -8,29 +8,39 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { priorityColor, useStore } from "@/lib/store";
+
+import { priorityColor } from "@/lib/constants";
+import {Task} from "@/types/types"
 import { Badge } from "./ui/badge";
 import { Calendar, MoreVertical } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
+import EditDeleteMenu from "./EditDeleteMenu";
+import { useTaskStore } from "@/store/taskStore";
+import { useModalStore } from "@/store/modalStore";
 
 const Kanban = () => {
 
 
   const {toast} = useToast();
+
+
   const {
     setTaskToDelete,
     tasks,
+    setNewTask,
+    setTasks
+  } = useTaskStore();
+
+  const {
     setIsDeleteModalOpen,
     setIsAddModalOpen,
-    setNewTask,
-    setTasks,
-  } = useStore();
+  } = useModalStore();
 
-  const updateTaskStatus = async (task) => {
+  const updateTaskStatus = async (task:Task) => {
     try {
-      const url = "http://localhost:5000/api/updatetask";
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/updatetask`;
       const headers = {
         method: "POST",
         headers: {
@@ -57,7 +67,7 @@ const Kanban = () => {
     }
   };
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result:any) => {
     if (!result.destination) return;
 
     const draggedItemId = result.draggableId;
@@ -102,11 +112,13 @@ const Kanban = () => {
     }
   };
 
+
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-4 justify-evenly max-sm:flex-wrap ">
+      <div className="flex gap-4 justify-evenly max-lg:flex-wrap ">
         {["To Do", "In Progress", "Completed"].map((status) => (
-          <div key={status} className="bg-secondary p-4 rounded-lg w-full">
+          <div key={status} className="dark:bg-secondary bg-gray-200 p-4 rounded-lg w-full">
             <h3 className="font-semibold mb-4">{status}</h3>
             <Droppable droppableId={status}>
               {(provided) => (
@@ -132,53 +144,29 @@ const Kanban = () => {
                             className="bg-background p-4 rounded shadow flex justify-between"
                           >
                             <div className="flex flex-col items-start">
-                              <div>
-                                <h3 className="font-semibold ">{task.title}</h3>
+                            <Badge  className={priorityColor(task.priority)}>
+                                  {task.priority}
+                                </Badge>
+                              <div className="capitalize">
+                                <h3 className="font-semibold text-lg ">{task.title}</h3>
                                 {task.description && (
-                                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                  <p className="text-sm text-gray-500 dark:text-gray-400 my-1">
                                     {task.description}
                                   </p>
                                 )}
                               </div>
-                              {/* Tasks Stats  */}
-                              <div className="flex items-center gap-2 mt-2 ">
-                                {/* <Badge variant="default" className="">{task.status}</Badge> */}
-                                <Badge className={priorityColor(task.priority)}>
-                                  {task.priority}
-                                </Badge>
-                                {task.dueDate && (
-                                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                              <div className="flex gap-1">
+                              {task.dueDate && (
+                                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                                     <Calendar className="h-4 w-4 mr-1" />
                                     {format(task.dueDate, "MMM d, yyyy")}
                                   </div>
                                 )}
+
                               </div>
+
                             </div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setNewTask(task);
-                                    setIsAddModalOpen(true);
-                                  }}
-                                >
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setTaskToDelete(task._id);
-                                    setIsDeleteModalOpen(true);
-                                  }}
-                                >
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            <EditDeleteMenu task={task} />
                           </div>
                         )}
                       </Draggable>

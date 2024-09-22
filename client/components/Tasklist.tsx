@@ -18,12 +18,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { priorityColor, TaskPriority, TaskStatus, useStore } from "@/lib/store";
+
+import {Task,
+  TaskPriority,
+  TaskStatus,} from "@/types/types"
 import { useToast } from "@/hooks/use-toast";
+import EditDeleteMenu from "./EditDeleteMenu";
+import { priorityColor } from "@/lib/constants";
+import { useModalStore } from "@/store/modalStore";
+import { useTaskStore } from "@/store/taskStore";
 
 const Tasklist = () => {
+
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "all">(
     "all"
@@ -37,10 +55,14 @@ const Tasklist = () => {
     setTaskToDelete,
     tasks,
     updateTask,
+    setNewTask,
+  } = useTaskStore();
+
+  const {
     setIsDeleteModalOpen,
     setIsAddModalOpen,
-    setNewTask,
-  } = useStore();
+  } = useModalStore();
+
   const { toast } = useToast();
 
   const filteredTasks = tasks.filter(
@@ -76,15 +98,15 @@ const Tasklist = () => {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap gap-4">
-        {/* Filters  */}
+      {/* Filters  */}
+      <div className="mb-4 flex flex-wrap gap-4 justify-start">
         <Select
           value={statusFilter}
           onValueChange={(value) =>
             setStatusFilter(value as TaskStatus | "all")
           }
         >
-          <SelectTrigger className="w-[180px] bg-primary text-primary-foreground">
+          <SelectTrigger className="w-fit px-4 bg-background dark:bg-secondary ">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
@@ -100,7 +122,7 @@ const Tasklist = () => {
             setPriorityFilter(value as TaskPriority | "all")
           }
         >
-          <SelectTrigger className="w-[180px] bg-primary text-primary-foreground">
+          <SelectTrigger className="w-fit px-4 bg-background dark:bg-secondary ">
             <SelectValue placeholder="Filter by priority" />
           </SelectTrigger>
           <SelectContent>
@@ -116,7 +138,7 @@ const Tasklist = () => {
             setSortBy(value as "title" | "priority" | "dueDate" | "none")
           }
         >
-          <SelectTrigger className="w-[180px] bg-primary text-primary-foreground">
+          <SelectTrigger className="w-fit px-4 bg-background dark:bg-secondary ">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -137,105 +159,102 @@ const Tasklist = () => {
       </div>
 
       {/* Tasks */}
-      <div className="space-y-2">
-        {sortedTasks.length == 0 ?
-        <div className="text-center text-gray-500 dark:text-gray-400 mt-10">
-          No tasks found</div>
-        :sortedTasks.map((task) => (
-          <div
-            key={task._id}
-            className=" dark:border  p-4 rounded shadow flex justify-between items-center"
-          >
-            <div className="flex flex-col items-start">
-              <div>
-                <h3 className="font-semibold ">{task.title}</h3>
-                {task.description && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {task.description}
-                  </p>
-                )}
-              </div>
-              {/* Tasks Stats  */}
-              <div className="flex items-center gap-2 mt-2 ">
-                {/* <Badge variant="default" className="">{task.status}</Badge> */}
-                <Badge className={priorityColor(task.priority)}>
-                  {task.priority}
-                </Badge>
-                {task.dueDate && (
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {format(task.dueDate, "MMM d, yyyy")}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Task Actions  */}
-            <div className="flex gap-2">
-              <Select
-                value={task.status}
-                onValueChange={async (value) => {
-                  const url = "http://localhost:5000/api/updatetask";
-                  const headers = {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ ...task, status: value }),
-                  };
-                  const res = await fetch(url, headers);
-                  const data = await res.json();
-
-                  updateTask({ ...task, status: value as TaskStatus });
-                  toast({
-                    title: "Task Updated",
-                    variant: "default",
-                    className: "bg-green-400 text-black",
-                    duration: 2000,
-                  })
-                }}
-              >
-                <SelectTrigger className={` w-[140px] max-md:hidden `}>
-                  <SelectValue placeholder={"Status"} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Status</SelectLabel>
-                    <SelectItem value="To Do">To Do</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              {/* Edit and Delete Tasks  */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setNewTask(task);
-                      setIsAddModalOpen(true);
-                    }}
-                  >
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setTaskToDelete(task._id);
-                      setIsDeleteModalOpen(true);
-                    }}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+      <div className="  py-4 space-y-2">
+        {sortedTasks.length == 0 ? (
+          <div className="text-center text-gray-500 dark:text-gray-400 mt-6">
+            No tasks found
           </div>
-        ))}
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tasks</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Due Date</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead className="text-right">Menu</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedTasks.map((task) => (
+                <TableRow key={task._id} className="">
+                  <TableCell className="space-y-2  text-nowrap w-1/2 capitalize">
+                    <div>
+                      <h3 className="font-semibold text-base   ">
+                        {task.title}
+                      </h3>
+                      {task.description && (
+                        <p className="text-xs md:text-s text-gray-500 dark:text-gray-400 mt-1">
+                          {task.description}
+                        </p>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-nowrap ">
+                    {task.dueDate
+                      ? format(task.dueDate, "MMM d, yyyy")
+                      : "No Due Date"}
+                  </TableCell>
+                  <TableCell className="text-nowrap">
+                    <Badge className={`${priorityColor(task.priority)} `}>
+                      {task.priority}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-nowrap  ">
+                    <Select
+                      value={task.status}
+                      onValueChange={async (value) => {
+                        const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/updatetask`;
+                        const headers = {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({ ...task, status: value }),
+                        };
+                        const res = await fetch(url, headers);
+                        const data = await res.json();
+
+                        updateTask({ ...task, status: value as TaskStatus });
+                        toast({
+                          title: "Task Updated",
+                          variant: "default",
+                          className: "bg-green-400 text-black",
+                          duration: 2000,
+                        });
+                      }}
+                    >
+                      <SelectTrigger className={` bg-background } `}>
+                        <SelectValue placeholder={"Status"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Status</SelectLabel>
+                          <SelectItem value="To Do">To Do</SelectItem>
+                          <SelectItem value="In Progress">
+                            In Progress
+                          </SelectItem>
+                          <SelectItem value="Completed">Completed</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  <TableCell className="text-right ">
+                    <EditDeleteMenu task={task} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell className="text-left text-sm" colSpan={5}>
+                  Total Tasks : {sortedTasks.length}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        )}
       </div>
     </div>
   );

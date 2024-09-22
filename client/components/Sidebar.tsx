@@ -21,16 +21,18 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useStore } from "@/lib/store";
+
 import { useToast } from "@/hooks/use-toast";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useTaskStore } from "@/store/taskStore";
 
 const Sidebar = () => {
-
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { setBoardView, boardView,user,setUser,setTasks } = useStore();
-  const {toast} = useToast();
-  const handleLogout=()=>{
+  const { setBoardView, boardView, user, setUser } = useDashboardStore();
+  const { setTasks} = useTaskStore();
+  const { toast } = useToast();
+  const handleLogout = () => {
     localStorage.removeItem("user");
     toast({
       title: "Logged out",
@@ -38,130 +40,114 @@ const Sidebar = () => {
       variant: "destructive",
       duration: 2000,
     });
-    setUser(null)
-    setTasks([])
-  }
+    setUser(null);
+    setTasks([]);
+  };
 
   return (
-    <div className={`bg-background border-r shadow-md transition-all max-sm:hidden  ${
-        sidebarCollapsed ? "w-16" : "w-64 "
-      }`}
-    >
-      <div className="flex flex-col h-full ">
-        <div className="p-4 flex items-center justify-between">
-          {!sidebarCollapsed && (
-            <h1 className="text-xl font-bold dark:text-white">Task Manager</h1>
-          )}
-          {/* {sidebarCollapsed && (
-            <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
-            <ListTodo className="w-16 h-8" />
-          )} */}
+    <>
+      {/* MOBILE MENU  */}
+      <div className="sm:hidden flex justify-between items-center p-3 shadow-md bg-background  ">
+        <h1 className="text-xl font-bold dark:text-white">Task Manager</h1>
+
+        <div className="flex justify-center items-center">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
-            {sidebarCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5" />
+              // <span>sun</span>
             ) : (
-              <ChevronLeft className="h-4 w-4" />
+              <Moon className="h-5 w-5" />
+              // <span>moon</span>
             )}
           </Button>
-        </div>
-        <nav className={`flex-1 space-y-2 ${ !sidebarCollapsed && "px-2"} `}>
-          <Button
-            variant={boardView == "list" ? "secondary" : "ghost"}
-            className={`w-full gap-2 ${sidebarCollapsed ? "justify-center" :"justify-start"}`}
-            onClick={() => setBoardView("list")}
-          >
-            <List className=" h-4 w-4" />
-            {!sidebarCollapsed && "Task List"}
-          </Button>
-          <Button
-            variant={boardView == "kanban" ? "secondary" : "ghost"}
-            className={`w-full gap-2 ${sidebarCollapsed ? "justify-center" :"justify-start"}`}
-            onClick={() => setBoardView("kanban")}
-          >
-            <LayoutGrid className="h-4 w-4" />
-            {!sidebarCollapsed && "Kanban Board"}
-          </Button>
-        </nav>
-        <div className="p-4">
-          {sidebarCollapsed ? (
-            <div className="flex flex-col items-center space-y-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <HamburgerMenuIcon className="h-6 w-6" />
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src="/avatar.png" />
-                      <AvatarFallback>{ user?.name.charAt(0).toUpperCase() }</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {/* <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Edit Profile</span>
-                  </DropdownMenuItem> */}
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="px-3">
-                    <Avatar className="w-8 h-8 mr-2">
-                      <AvatarImage src="/avatar.png" />
-                      <AvatarFallback>{ user?.name.charAt(0).toUpperCase() }</AvatarFallback>
-                    </Avatar>
-                    <span className="capitalize">{user?.name}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {/* <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Edit Profile</span>
-                  </DropdownMenuItem> */}
-                  <DropdownMenuItem onClick={handleLogout}>
-
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
-
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className=" space-y-2 p-4">
+              <h1 className=" py-2 font-bold  border-b ">Menu</h1>
+              <DropdownMenuItem asChild>
+                <Button
+                  variant={boardView == "list" ? "default" : "link"}
+                  className="w-full justify-start gap-2"
+                  onClick={() => setBoardView("list")}
+                >
+                  <List className=" h-4 w-4" />
+                  List View
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Button
+                  variant={boardView == "kanban" ? "default" : "link"}
+                  onClick={() => setBoardView("kanban")}
+                  className="w-full justify-start gap-2"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                  Kanban View
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout} className="bg-red-400  dark:bg-red-600">
+                <LogOut className="mr-2 h-4 w-4 " />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-    </div>
+      {/* DESKTOP MENU  */}
+      <div
+        className={`bg-background  border-r shadow-sm transition-all max-sm:hidden w-52 md:w-64`}
+      >
+        <div className="flex flex-col h-full ">
+          <div className="p-4 flex items-center justify-between">
+            <h1 className="text-xl font-bold dark:text-white">Task Manager</h1>
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                  // <span>sun</span>
+                ) : (
+                  <Moon className="h-4 w-4" />
+                  // <span>moon</span>
+                )}
+              </Button>
+          </div>
+          <nav className={`flex-1 space-y-2 px-2 `}>
+            <Button
+              variant={boardView == "list" ? "default" : "link"}
+              className={`w-full gap-2 justify-start`}
+              onClick={() => setBoardView("list")}
+            >
+              <List className=" h-4 w-4" />
+              List View
+            </Button>
+            <Button
+              variant={boardView == "kanban" ? "default" : "link"}
+              className={`w-full gap-2 justify-start`}
+              onClick={() => setBoardView("kanban")}
+            >
+              <LayoutGrid className="h-4 w-4" />
+              Board View
+            </Button>
+          </nav>
+          <div className="p-4">
+            <Button onClick={handleLogout} variant={"destructive"} className=" w-full">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

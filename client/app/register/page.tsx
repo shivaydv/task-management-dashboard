@@ -14,12 +14,13 @@ import {
 import Link from "next/link";
 
 import { useRouter } from "next/navigation";
-import { useStore } from "@/lib/store";
+
 import { useToast } from "@/hooks/use-toast";
+import { useDashboardStore } from "@/store/dashboardStore";
 
 function Page() {
   const router = useRouter();
-  const { user, setUser } = useStore();
+  const { user, setUser } = useDashboardStore();
   const {toast} = useToast();
   useEffect(() => {
     if(!user){
@@ -54,8 +55,20 @@ function Page() {
 
   const submitForm = async (e) => {
     e.preventDefault();
+
+    if (registerInfo.password !== registerInfo.cpassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "default",
+        className: "bg-red-400 text-black",
+        duration: 2000,
+      });
+      return;
+    }
+
     try {
-      const url = "http://localhost:5000/auth/register";
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/register`;
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -82,7 +95,7 @@ function Page() {
           className: "bg-red-400 text-black",
           duration: 2000,
         })
-  
+
       }
     } catch (error: any) {
       const { message } = error;
@@ -99,20 +112,20 @@ function Page() {
 
   if(user) return null;
   else return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="flex items-center px-5 justify-center min-h-screen bg-muted ">
+      <Card className="w-full max-w-md shadow-lg  ">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-gray-800">
+          <CardTitle className="text-2xl font-bold text-center ">
             Register Your Account
           </CardTitle>
-          <CardDescription className="text-center text-gray-600">
+          <CardDescription className="text-center ">
             Task Management Dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={submitForm}>
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-700">
+              <Label htmlFor="name" >
                 Name
               </Label>
               <Input
@@ -123,11 +136,10 @@ function Page() {
                 onChange={handleChange}
                 required
                 autoComplete="off"
-                className="bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-700">
+              <Label htmlFor="email" >
                 Email
               </Label>
               <Input
@@ -138,11 +150,11 @@ function Page() {
                 onChange={handleChange}
                 required
                 autoComplete="off"
-                className="bg-white"
+
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-700">
+              <Label htmlFor="password" >
                 Password
               </Label>
               <Input
@@ -153,11 +165,11 @@ function Page() {
                 autoComplete="on"
                 onChange={handleChange}
                 required
-                className="bg-white"
+
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cpassword" className="text-gray-700">
+              <Label htmlFor="cpassword" >
                 Confirm Password
               </Label>
               <Input
@@ -168,7 +180,7 @@ function Page() {
                 autoComplete="on"
                 onChange={handleChange}
                 required
-                className="bg-white"
+
               />
             </div>
 
@@ -180,7 +192,7 @@ function Page() {
             </Button>
           </form>
           <div className="pt-4">
-            <p className="text-center text-gray-600">
+            <p className="text-center ">
               Already have an account?{" "}
               <Link href="/login" className="text-blue-600 hover:underline">
                 Sign In

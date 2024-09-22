@@ -1,6 +1,6 @@
 "use client";
 
-import { useStore } from "@/lib/store";
+
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -12,20 +12,27 @@ import {
 } from "./ui/dialog";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useModalStore } from "@/store/modalStore";
+import { useTaskStore } from "@/store/taskStore";
 
 const DeleteModal = () => {
   const {
     setTaskToDelete,
     taskToDelete,
-    deleteTask,
+    deleteTask
+  } = useTaskStore();
+
+  const {
     setIsDeleteModalOpen,
     isDeleteModalOpen,
-  } = useStore();
+  } = useModalStore();
+
+
   const {toast} = useToast();
 
   const handleDeleteTask = async() => {
     if (taskToDelete) {
-      const res = await fetch("http://localhost:5000/api/deletetask", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/deletetask`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +57,7 @@ const DeleteModal = () => {
     setIsDeleteModalOpen(false);
   };
 
- 
+
   return (
     <Dialog open={isDeleteModalOpen} onOpenChange={handleCloseDeleteModal}>
       <DialogContent>
