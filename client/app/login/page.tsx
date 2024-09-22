@@ -96,9 +96,12 @@ function Page() {
   return (
     <div className="flex items-center justify-center min-h-screen px-6 bg-muted">
 
+
       <Card className="w-full max-w-md shadow-lg">
 
+
         <CardHeader className="space-y-1">
+
           <CardTitle className="text-2xl font-bold text-center ">
             Login Your Account
           </CardTitle>
@@ -108,6 +111,10 @@ function Page() {
         </CardHeader>
 
         <CardContent>
+        <div className="text-center">
+          <p>Demo User email = test@gmail.com</p>
+          <p>Demo User password  = 123456</p>
+        </div>
           <form className="space-y-4" onSubmit={submitForm}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
