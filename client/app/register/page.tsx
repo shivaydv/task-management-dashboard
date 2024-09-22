@@ -1,60 +1,51 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import Link from "next/link";
-
 import { useRouter } from "next/navigation";
-
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardStore } from "@/store/dashboardStore";
+import {Card,CardContent,CardDescription,CardHeader,CardTitle,} from "@/components/ui/card";
+
+
 
 function Page() {
+
   const router = useRouter();
   const { user, setUser } = useDashboardStore();
   const {toast} = useToast();
+  const [loading, setLoading] = useState(false);
+  const [registerInfo, setRegisterInfo] = useState({name: "",email: "",password: "",cpassword: "",});
+
+
+  const handleChange = (e:any) => {
+    const { name, value } = e.target;
+    setRegisterInfo({...registerInfo,[name]: value,});
+  };
+
   useEffect(() => {
     if(!user){
-        setUser(
-            localStorage.getItem("user")
-            ? JSON.parse(localStorage.getItem("user") as string)
-            : null
-        );
+      setUser(localStorage.getItem("user")? JSON.parse(localStorage.getItem("user") as string): null);
     }
   }, []);
 
+  // Redirect to home if user is already logged in
   useEffect(() => {
     if (user) {
       router.push("/");
     }
   }, [user, router]);
 
-  const [registerInfo, setRegisterInfo] = useState({
-    name: "",
-    email: "",
-    password: "",
-    cpassword: "",
-  });
 
-  const handleChange = (e:any) => {
-    const { name, value } = e.target;
-    setRegisterInfo({
-      ...registerInfo,
-      [name]: value,
-    });
-  };
+
+
 
   const submitForm = async (e:any) => {
     e.preventDefault();
+    setLoading(true);
 
     if (registerInfo.password !== registerInfo.cpassword) {
       toast({
@@ -107,6 +98,8 @@ function Page() {
         duration: 2000,
       })
       console.error(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,6 +179,7 @@ function Page() {
 
             <Button
               type="submit"
+              disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out"
             >
               Register

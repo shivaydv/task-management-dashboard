@@ -1,70 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { MoreVertical, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-
-import {Task,
-  TaskPriority,
-  TaskStatus,} from "@/types/types"
+import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import EditDeleteMenu from "./EditDeleteMenu";
-import { priorityColor } from "@/lib/constants";
-import { useModalStore } from "@/store/modalStore";
+import { Button } from "@/components/ui/button";
 import { useTaskStore } from "@/store/taskStore";
+import {TaskPriority,TaskStatus,} from "@/types/types"
+import {Table,TableBody,TableCell,TableFooter,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
+import {Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue,} from "@/components/ui/select";
 
 const Tasklist = () => {
 
-  const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
-  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "all">(
-    "all"
-  );
-  const [sortBy, setSortBy] = useState<
-    "title" | "priority" | "dueDate" | "none"
-  >("none");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-
-  const {
-    setTaskToDelete,
-    tasks,
-    updateTask,
-    setNewTask,
-  } = useTaskStore();
-
-  const {
-    setIsDeleteModalOpen,
-    setIsAddModalOpen,
-  } = useModalStore();
-
   const { toast } = useToast();
+  const {tasks,updateTask,} = useTaskStore();
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
+  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "all">("all");
+  const [sortBy, setSortBy] = useState<"title" | "priority" | "dueDate" | "none">("none");
 
+  
   const filteredTasks = tasks.filter(
     (task) =>
       (statusFilter === "all" || task.status === statusFilter) &&
@@ -196,9 +151,7 @@ const Tasklist = () => {
                       : "No Due Date"}
                   </TableCell>
                   <TableCell className="text-nowrap">
-                    <Badge className={`${priorityColor(task.priority)} `}>
                       {task.priority}
-                    </Badge>
                   </TableCell>
                   <TableCell className="text-nowrap  ">
                     <Select

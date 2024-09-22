@@ -1,42 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { priorityColor } from "@/lib/constants";
-import {Task} from "@/types/types"
-import { Badge } from "./ui/badge";
-import { Calendar, MoreVertical } from "lucide-react";
+import React from "react";
 import { format } from "date-fns";
-import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import {Task} from "@/types/types"
+import { Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import EditDeleteMenu from "./EditDeleteMenu";
 import { useTaskStore } from "@/store/taskStore";
-import { useModalStore } from "@/store/modalStore";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const Kanban = () => {
 
-
   const {toast} = useToast();
+  const {tasks,setTasks} = useTaskStore();
 
 
-  const {
-    setTaskToDelete,
-    tasks,
-    setNewTask,
-    setTasks
-  } = useTaskStore();
-
-  const {
-    setIsDeleteModalOpen,
-    setIsAddModalOpen,
-  } = useModalStore();
+  // update the task when it is dragged to a different column and update the status
 
   const updateTaskStatus = async (task:Task) => {
     try {
@@ -67,6 +47,7 @@ const Kanban = () => {
     }
   };
 
+  // drag and drop logic for kanban board
   const onDragEnd = (result:any) => {
     if (!result.destination) return;
 
@@ -82,33 +63,15 @@ const Kanban = () => {
       const [movedTask] = newTasks.splice(sourceIndex, 1);
       newTasks.splice(destinationIndex, 0, movedTask);
       setTasks(newTasks);
-
-      console.log(`Item dragged: ${draggedItemId}`);
-      console.log(`Dragged within the same column: ${sourceColumn}`);
-      console.log(
-        `Moved from index: ${sourceIndex} to index: ${destinationIndex}`
-      );
-      console.log("Updated tasks:", newTasks);
     } else {
       // Find the task that was dragged
       const taskIndex = tasks.findIndex((task) => task._id === draggedItemId);
       const updatedTask = { ...tasks[taskIndex], status: destinationColumn };
 
       // Create a new tasks array with the updated task
-      const newTasks = [
-        ...tasks.slice(0, taskIndex),
-        updatedTask,
-        ...tasks.slice(taskIndex + 1),
-      ];
-
+      const newTasks = [...tasks.slice(0, taskIndex),updatedTask,...tasks.slice(taskIndex + 1),];
       setTasks(newTasks);
       updateTaskStatus(updatedTask);
-
-      console.log(`Item dragged: ${draggedItemId}`);
-      console.log(`Dragged from: ${sourceColumn}`);
-      console.log(`Dragged to: ${destinationColumn}`);
-      console.log(`Current state of item:`, updatedTask);
-      console.log("Updated tasks:", newTasks);
     }
   };
 
@@ -125,11 +88,11 @@ const Kanban = () => {
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="space-y-2 min-h-[100px]" // Ensure minimum height to allow dropping in empty columns
+                  className="space-y-2 min-h-[100px]"
                 >
                   {tasks
                     .filter((task) => task.status === status)
-                    .sort((a, b) => a.title.localeCompare(b.title)) // Sort tasks by title
+                    .sort((a, b) => a.title.localeCompare(b.title))
                     .map((task, index) => (
                       <Draggable
                         key={task._id}
@@ -144,16 +107,10 @@ const Kanban = () => {
                             className="bg-background p-4 rounded shadow flex justify-between"
                           >
                             <div className="flex flex-col items-start">
-                            <Badge  className={priorityColor(task.priority)}>
-                                  {task.priority}
-                                </Badge>
+                              <Badge  className={"bg-primary"}>{task.priority}</Badge>
                               <div className="capitalize">
                                 <h3 className="font-semibold text-lg ">{task.title}</h3>
-                                {task.description && (
-                                  <p className="text-sm text-gray-500 dark:text-gray-400 my-1">
-                                    {task.description}
-                                  </p>
-                                )}
+                                {task.description && (<p className="text-sm text-gray-500 dark:text-gray-400 my-1">{task.description}</p>)}
                               </div>
                               <div className="flex gap-1">
                               {task.dueDate && (
@@ -162,10 +119,9 @@ const Kanban = () => {
                                     {format(task.dueDate, "MMM d, yyyy")}
                                   </div>
                                 )}
-
                               </div>
-
                             </div>
+
                             <EditDeleteMenu task={task} />
                           </div>
                         )}

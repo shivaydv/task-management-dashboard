@@ -1,33 +1,18 @@
 "use client";
 
-import Sidebar from "./Sidebar";
-
 import Header from "./Header";
-import Tasklist from "./Tasklist";
 import Kanban from "./Kanban";
-import { useRouter } from "next/navigation";
+import Sidebar from "./Sidebar";
 import { useEffect } from "react";
+import Tasklist from "./Tasklist";
+import { useRouter } from "next/navigation";
 import { useTaskStore } from "@/store/taskStore";
 import { useDashboardStore } from "@/store/dashboardStore";
 
 export function DashboardComponent() {
   const { boardView, user, setUser } = useDashboardStore();
-  const { tasks,setTasks } = useTaskStore();
+  const { setTasks } = useTaskStore();
   const router = useRouter();
-
-  useEffect(() => {
-    setUser(
-      localStorage.getItem("user")
-        ? JSON.parse(localStorage.getItem("user") as string)
-        : null
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
-  }, [user, router]);
 
   const fetchTasks = async () => {
     const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/alltasks`;
@@ -46,14 +31,25 @@ export function DashboardComponent() {
 
   }
 
+  useEffect(() => {
+    setUser(
+      localStorage.getItem("user")? JSON.parse(localStorage.getItem("user") as string): null
+    );
+  }, []);
+
+  // Redirect to login if user is not logged in
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
   useEffect(()=>{
     try {
       fetchTasks()
     } catch (error) {
       console.error(error);
-
     }
-
   },[])
 
   if (!user) {

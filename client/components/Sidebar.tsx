@@ -1,37 +1,22 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useState } from "react";
 import { Button } from "./ui/button";
-import {
-  ChevronLeft,
-  ChevronRight,
-  LayoutGrid,
-  List,
-  ListTodo,
-  LogOut,
-  Moon,
-  Sun,
-  User,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-
+import { useTheme } from "next-themes";
 import { useToast } from "@/hooks/use-toast";
+import { useTaskStore } from "@/store/taskStore";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { useDashboardStore } from "@/store/dashboardStore";
-import { useTaskStore } from "@/store/taskStore";
+import { LayoutGrid, List, LogOut, Moon, Sun } from "lucide-react";
+import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuTrigger,} from "./ui/dropdown-menu";
 
 const Sidebar = () => {
+
   const { theme, setTheme } = useTheme();
-  const { setBoardView, boardView, user, setUser } = useDashboardStore();
-  const { setTasks} = useTaskStore();
+  const { setBoardView, boardView, setUser } = useDashboardStore();
+  const { setTasks } = useTaskStore();
   const { toast } = useToast();
+
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     toast({
@@ -58,10 +43,8 @@ const Sidebar = () => {
           >
             {theme === "dark" ? (
               <Sun className="h-5 w-5" />
-              // <span>sun</span>
             ) : (
               <Moon className="h-5 w-5" />
-              // <span>moon</span>
             )}
           </Button>
           <DropdownMenu>
@@ -92,7 +75,10 @@ const Sidebar = () => {
                   Kanban View
                 </Button>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout} className="bg-red-400  dark:bg-red-600">
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="bg-red-400  dark:bg-red-600"
+              >
                 <LogOut className="mr-2 h-4 w-4 " />
                 <span>Logout</span>
               </DropdownMenuItem>
@@ -108,18 +94,16 @@ const Sidebar = () => {
           <div className="p-4 flex items-center justify-between">
             <h1 className="text-xl font-bold dark:text-white">Task Manager</h1>
             <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                  // <span>sun</span>
-                ) : (
-                  <Moon className="h-4 w-4" />
-                  // <span>moon</span>
-                )}
-              </Button>
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </Button>
           </div>
           <nav className={`flex-1 space-y-2 px-2 `}>
             <Button
@@ -140,9 +124,13 @@ const Sidebar = () => {
             </Button>
           </nav>
           <div className="p-4">
-            <Button onClick={handleLogout} variant={"destructive"} className=" w-full">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
+            <Button
+              onClick={handleLogout}
+              variant={"destructive"}
+              className=" w-full"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
             </Button>
           </div>
         </div>

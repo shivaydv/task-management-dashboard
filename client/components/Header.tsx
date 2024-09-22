@@ -4,8 +4,6 @@ import { Button } from "./ui/button"
 import { useModalStore } from "@/store/modalStore"
 import { useDashboardStore } from "@/store/dashboardStore"
 
-
-
 const Header = () => {
 
   const {setIsAddModalOpen} = useModalStore()

@@ -2,33 +2,21 @@
 
 
 import { Button } from "./ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
-import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useModalStore } from "@/store/modalStore";
 import { useTaskStore } from "@/store/taskStore";
+import {Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle } from "./ui/dialog";
 
 const DeleteModal = () => {
-  const {
-    setTaskToDelete,
-    taskToDelete,
-    deleteTask
-  } = useTaskStore();
-
-  const {
-    setIsDeleteModalOpen,
-    isDeleteModalOpen,
-  } = useModalStore();
-
 
   const {toast} = useToast();
+  const {setTaskToDelete,taskToDelete,deleteTask} = useTaskStore();
+  const {setIsDeleteModalOpen,isDeleteModalOpen,} = useModalStore();
+
+  const handleCloseDeleteModal = () => {
+    setTaskToDelete("");
+    setIsDeleteModalOpen(false);
+  };
 
   const handleDeleteTask = async() => {
     if (taskToDelete) {
@@ -51,12 +39,6 @@ const DeleteModal = () => {
       setIsDeleteModalOpen(false);
     }
   };
-
-  const handleCloseDeleteModal = () => {
-    setTaskToDelete("");
-    setIsDeleteModalOpen(false);
-  };
-
 
   return (
     <Dialog open={isDeleteModalOpen} onOpenChange={handleCloseDeleteModal}>

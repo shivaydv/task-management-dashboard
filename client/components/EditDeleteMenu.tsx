@@ -1,19 +1,19 @@
 "use client"
 
 import React from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {Task} from "@/types/types"
 import { Button } from "./ui/button";
 import { MoreVertical } from "lucide-react";
-
-import {Task} from "@/types/types"
 import { useTaskStore } from "@/store/taskStore";
 import { useModalStore } from "@/store/modalStore";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 const EditDeleteMenu = ({task}:{task:Task}) => {
 
     const { setTaskToDelete, setNewTask } = useTaskStore();
     const {  setIsDeleteModalOpen, setIsAddModalOpen } = useModalStore();
-  return (
+    
+return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
