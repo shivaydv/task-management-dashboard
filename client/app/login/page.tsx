@@ -26,7 +26,7 @@ function Page() {
     password: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     setLoginInfo({
       ...loginInfo,
@@ -34,7 +34,7 @@ function Page() {
     });
   };
 
-  const submitForm = async (e) => {
+  const submitForm = async (e:any) => {
     e.preventDefault();
 
     try {

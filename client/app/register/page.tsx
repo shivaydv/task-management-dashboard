@@ -45,7 +45,7 @@ function Page() {
     cpassword: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     setRegisterInfo({
       ...registerInfo,
