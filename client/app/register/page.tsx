@@ -53,7 +53,7 @@ function Page() {
     });
   };
 
-  const submitForm = async (e) => {
+  const submitForm = async (e:any) => {
     e.preventDefault();
 
     if (registerInfo.password !== registerInfo.cpassword) {
